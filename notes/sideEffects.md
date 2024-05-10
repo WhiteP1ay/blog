@@ -55,7 +55,11 @@ import '@utils/resetFontSize';
 //...package.json
 "sideEffects": [
 		"**/*.css"
-		//如果是vue项目还需要
-		"*.vue"
+		//如果是vue项目，组件内样式丢失，你需要指明哪个组件含有副作用
+		"./src/ComponentWithStyle.vue"
 ]
 ```
+
+另外，因为tree-shaking依赖于esModule的静态分析，所以在使用一些库的时候优先考虑es版本
+
+比如使用***lodash-es***而不是***lodash。***
