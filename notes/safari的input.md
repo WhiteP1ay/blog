@@ -8,7 +8,7 @@ import { useEffect } from "react";
 
 export default function MyTest() {
   useEffect(() => {
-    document.documentElement.style.fontSize = "15px";
+    document.documentElement.style.fontSize = "4px";
   }, []);
 
   return (
