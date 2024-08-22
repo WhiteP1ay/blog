@@ -1,3 +1,5 @@
+# 记Safari发get请求缺参数问题
+
 ![alt text](./img/image.png)
 
 如图，上面是 safari 发的 get 请求，但是缺少参数，导致请求失败。

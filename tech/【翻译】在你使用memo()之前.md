@@ -1,4 +1,4 @@
-# 在你使用 memo 之前
+# 【翻译】在你使用 memo 之前
 
 翻译自https://overreacted.io/before-you-memo/
 

@@ -1,10 +1,3 @@
----
-tags: [tech]
-title: mysql
-created: '2024-02-22T09:49:01.250Z'
-modified: '2024-02-22T09:54:53.654Z'
----
-
 # mysql
 
 ```shell
@@ -25,7 +18,7 @@ brew services start mysql
 ```
 
    By default, brew installs the MySQL database without a root password. To secure it run: 
-   
+
 ```
 mysql_secure_installation
 ```
