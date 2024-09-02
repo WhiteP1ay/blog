@@ -21,7 +21,7 @@ export default function MyTest() {
 ```
 
 用 iphone 的 safari 打开该页面，input 框的光标会偏移  
-![bug](./img/iosSafariInputBug.png)
+<img src="./img/iosSafariInputBug.png" alt="bug" style="zoom:33%;" />
 
 ### 猜测问题原因及解决方案
 
