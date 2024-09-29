@@ -1,8 +1,3 @@
----
-id: 各种dependencies
-title: 各种dependencies
----
-
 # 各种dependencies
 
 ### devDependencies
@@ -52,4 +47,3 @@ title: 各种dependencies
 > 
 > 
 >                                                                                                                                     — chatGpt
->

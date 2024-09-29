@@ -1,8 +1,3 @@
----
-id: engines&os&cpu
-title: engines&os&cpu
----
-
 # engines/os/cpu
 
 engines用于指定node.js版本 , 如果是*就是不指定。

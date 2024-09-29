@@ -1,8 +1,3 @@
----
-id: exports&files&types
-title: exports&files&types
----
-
 # exports/files/types
 
 ### exports

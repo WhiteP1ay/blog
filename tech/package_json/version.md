@@ -1,8 +1,3 @@
----
-id: version
-title: version
----
-
 # version
 
 ### **Semver规范**

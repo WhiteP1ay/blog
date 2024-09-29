@@ -1,8 +1,3 @@
----
-id: package.json
-title: package.json
----
-
 # package.json
 
 # **基础字段**

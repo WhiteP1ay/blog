@@ -1,8 +1,4 @@
----
-id: sideEffects
-title: sideEffects
----
-
+# sideEffects
 [Tree Shaking](https://webpack.js.org/guides/tree-shaking/#mark-a-function-call-as-side-effect-free)
 
 用于描述副作用项。打包工具在做摇树优化的时候大体遵循如下逻辑：

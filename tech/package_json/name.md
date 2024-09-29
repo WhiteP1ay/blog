@@ -1,8 +1,3 @@
----
-id: name
-title: name
----
-
 # name
 
 项目的名称在 npm（Node Package Manager）上必须是唯一的。这意味着任何在 npm 注册表上发布的包都必须有一个独特的名称。

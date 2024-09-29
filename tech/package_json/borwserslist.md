@@ -1,8 +1,3 @@
----
-id: browserlist
-title: browserlist
----
-
 # browserlist
 [github](https://github.com/browserslist/browserslist)
 

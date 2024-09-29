@@ -1,8 +1,3 @@
----
-id: type&main&module
-title: type&main&module
----
-
 # type/main/module
 
 ### type
