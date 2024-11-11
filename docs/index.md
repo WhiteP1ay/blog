@@ -1,0 +1,25 @@
+---
+layout: home
+hero:
+  name: WhiteP1ay的博客
+  text: 技术博客
+  tagline: 记录学习与思考
+  actions:
+    - theme: brand
+      text: 技术文章
+      link: /tech/
+    - theme: alt
+      text: 读书笔记
+      link: /read/
+    - theme: alt
+      text: 音乐学习
+      link: /music/
+
+features:
+  - title: 技术文章
+    details: 记录技术学习和问题解决的过程
+  - title: 读书笔记
+    details: 分享读书心得和感悟
+  - title: 音乐学习
+    details: 记录音乐学习的点点滴滴
+--- 

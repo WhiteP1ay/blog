@@ -1,0 +1,16 @@
+{
+  "name": "whitep1ay-blog",
+  "version": "1.0.0",
+  "description": "WhiteP1ay的博客",
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev docs",
+    "build": "vitepress build docs",
+    "preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "vitepress": "^1.0.0-rc.44"
+  },
+  "dependencies": {}
+}
