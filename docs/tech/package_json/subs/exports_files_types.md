@@ -1,6 +1,6 @@
 # exports/files/types
 
-### exports
+## exports
 
 - 是[main](https://docs.npmjs.com/cli/v10/configuring-npm/package-json#main)的别名，描述模块的导出路径。优先级高于main。
 - 可以为commonjs和ESmodule指定不同的入口
@@ -66,15 +66,15 @@ if (import && types) { // 当使用ES模块导入，并且在TypeScript环境中
 } ...
 ```
 
-### files
+## files
 
- **`files`** 字段是一个文件模式的数组，用于描述在将你的包作为依赖项安装时要包含的条目。
+ ###`files`### 字段是一个文件模式的数组，用于描述在将你的包作为依赖项安装时要包含的条目。
 
-文件模式遵循类似于 **`.gitignore`** 的语法。如果省略默认为["*"]，即包含所有文件。
+文件模式遵循类似于 ###`.gitignore`### 的语法。如果省略默认为["*"]，即包含所有文件。
 
 但有些文件无论是否配置了files字段都会被包含或排除。可以通过.npmignore来更具体的配置。具体参考[npm Docs](https://docs.npmjs.com/cli/v10/configuring-npm/package-json#files)
 
-### types
+## types
 
 用于指明类型声明文件的路径
 

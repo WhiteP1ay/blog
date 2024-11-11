@@ -1,6 +1,6 @@
 # type/main/module
 
-### type
+## type
 
 type 字段是用来指定你的项目是一个什么类型的包。默认是commonjs。备选值是module，表示这是一个ES module。
 
@@ -12,9 +12,9 @@ type 字段是用来指定你的项目是一个什么类型的包。默认是com
 > 如果不希望将后缀名改成`.mjs`，可以在项目的`package.json`文件中，指定`type`字段为`module`。
 > 
 
-### main
+## main
 
-**`main`** 字段是一个模块标识符，是你程序的主要入口点。也就是说，如果你的包叫做 foo，用户安装了它，然后执行 **`require("foo")`**，那么你main模块的导出对象将被返回。
+###`main`### 字段是一个模块标识符，是你程序的主要入口点。也就是说，如果你的包叫做 foo，用户安装了它，然后执行 ###`require("foo")`###，那么你main模块的导出对象将被返回。
 
 如果没设置main，默认是 index.js
 
@@ -31,7 +31,7 @@ import{ something }from'es-module-package';
 // 实际加载的是 ./node_modules/es-module-package/src/index.js
 ```
 
-### module
+## module
 
 可以通过module字段明确ES module的入口文件。
 

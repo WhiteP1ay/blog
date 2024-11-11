@@ -1,6 +1,6 @@
 ## iphone safari 的 input 光标左偏问题
 
-### 最小复现 demo
+## 最小复现 demo
 
 ```tsx
 import { Input } from "@mui/material";
@@ -23,6 +23,6 @@ export default function MyTest() {
 用 iphone 的 safari 打开该页面，input 框的光标会偏移  
 <img src="./img/iosSafariInputBug.png" alt="bug" style="zoom:33%;" />
 
-### 猜测问题原因及解决方案
+## 猜测问题原因及解决方案
 
 可能是因为根元素的字体小于 12px，越小 bug 越明显。所以解决方案就是别让 html 的字体太小。

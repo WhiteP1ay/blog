@@ -87,7 +87,8 @@ export default function App() {
 }
 ```
 
-现在我们不能通过 提取不使用 color 部分到另一个组件的方法 来解决问题了，因为这将不得不包括 div，而 div 又包括了 ExpensiveTree，所以我们只能使用 memo 了对吗？
+现在我们不能通过 提取不使用 color 部分到另一个组件的方法 来解决问题了，因为这将不得不包括 div，而 div 又包括了 ExpensiveTree，所以我们只能使用 memo 了对吗？ 
+
 ...
 
 ...

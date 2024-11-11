@@ -1,6 +1,8 @@
 # 移除事件监听
 
-### 经典方法
+记录一下,今天学到的基于AbortController移除事件监听
+
+## 经典方法
 
 ```js
 EventTarget.removeEventListener()
@@ -15,7 +17,7 @@ EventTarget.removeEventListener()
 1. 一下子移除多个事件有点麻烦,比如需要移除5个事件,要调用5次removeEventListener
 2. addEventListener的时候不能快乐的使用箭头函数了
 
-### AbortController
+## AbortController
 
 [addEventListener](https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/addEventListener) 注意看第三个参数options对象的signal
 
@@ -31,7 +33,9 @@ window.addEventListener('resize', listener, { signal: controller.signal });
 controller.abort();
 ```
 
-[举个例子:](https://developer.mozilla.org/zh-CN/docs/Web/API/AbortController/signal)
+
+
+[举个常规的取消请求的例子:](https://developer.mozilla.org/zh-CN/docs/Web/API/AbortController/signal)
 
 ```js
 const controller = new AbortController();
