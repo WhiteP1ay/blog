@@ -5,6 +5,7 @@ export default defineConfig({
   title: "WhiteP1ay的博客",
   description: "技术博客",
   lang: "zh-CN",
+  base: "/blog/",
 
   themeConfig: {
     nav: [
