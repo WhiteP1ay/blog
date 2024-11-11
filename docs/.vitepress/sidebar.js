@@ -13,11 +13,19 @@ const isDirectory = (path) => fs.lstatSync(path).isDirectory()
 // 取差值
 const intersections = (arr1, arr2) => Array.from(new Set(arr1.filter((item) => !new Set(arr2).has(item))))
 
-// 添加错误处理和路径存在检查
+// 修改：扩展白名单检查函数
+const isInWhiteList = (file) => WHITE_LIST.includes(file)
+
+// 修改 getList 函数
 function getList(params, path1, pathname) {
     const res = []
     try {
         for (let file of params) {
+            // 检查是否在白名单中，如果在则跳过
+            if (isInWhiteList(file)) {
+                continue
+            }
+
             const dir = path.join(path1, file)
             
             // 检查路径是否存在
@@ -29,11 +37,16 @@ function getList(params, path1, pathname) {
             const isDir = isDirectory(dir)
             if (isDir) {
                 const files = fs.readdirSync(dir)
-                res.push({
-                    text: file,
-                    collapsible: true,
-                    items: getList(files, dir, `${pathname}/${file}`),
-                })
+                // 过滤子目录中的白名单项目
+                const filteredFiles = files.filter(f => !isInWhiteList(f))
+                // 只有当过滤后的文件列表不为空时才添加目录
+                if (filteredFiles.length > 0) {
+                    res.push({
+                        text: file,
+                        collapsible: true,
+                        items: getList(filteredFiles, dir, `${pathname}/${file}`),
+                    })
+                }
             } else {
                 const name = path.basename(file)
                 const suffix = path.extname(file)

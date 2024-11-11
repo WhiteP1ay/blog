@@ -12,14 +12,14 @@ hero:
       text: 读书笔记
       link: /read/
     - theme: alt
-      text: 音乐学习
-      link: /music/
+      text: 杂记
+      link: /misc/
 
 features:
   - title: 技术文章
     details: 记录技术学习和问题解决的过程
   - title: 读书笔记
     details: 分享读书心得和感悟
-  - title: 音乐学习
-    details: 记录音乐学习的点点滴滴
+  - title: 杂记
+    details: 记录生活和思考
 --- 
