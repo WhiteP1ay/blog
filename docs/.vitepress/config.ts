@@ -8,6 +8,10 @@ export default defineConfig({
   base: "/blog/",
 
   themeConfig: {
+    docFooter: {
+      prev: false,
+      next: false,
+    },
     nav: [
       { text: "首页", link: "/" },
       { text: "技术文章", link: "/tech/" },
@@ -19,6 +23,6 @@ export default defineConfig({
       "/read/": set_sidebar("/read/"),
       "/music/": set_sidebar("/music/"),
     },
-    socialLinks: [{ icon: "github", link: "https://github.com/your-username" }],
+    socialLinks: [{ icon: "github", link: "https://github.com/WhiteP1ay" }],
   },
 });
