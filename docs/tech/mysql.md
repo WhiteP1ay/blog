@@ -1,8 +1,14 @@
-# mysql
+# mysql学习笔记
+
+记录一下学习mysql的过程
+
+## 安装
 
 ```shell
 homebrew install mysql
 ```
+
+## 启动遇到的问题
 
 I installed MySQL on Mac OS, but when I tried mysql -u root I got the following 
 

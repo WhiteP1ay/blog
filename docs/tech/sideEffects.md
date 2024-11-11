@@ -1,4 +1,32 @@
-# sideEffects
+# sideEffects与摇树优化丢东西
+
+起因是 在我们引入了lodash后,分析打包后的资源体积,发现lodash太大了.
+
+然后决定手动配置package.json中的sideEffects字段来做摇树优化,减少lodash体积.
+
+但启动摇树优化后,我们发现css样式丢了,以及部分js模块没执行.
+
+## 解决方法
+
+css的丢失可以这样解决:
+
+```js
+"sideEffects": [
+		"**/*.css"
+]
+```
+
+js丢失可能是因为那个模块没有导出任何东西,也需要手动添加进来
+
+```js
+"sideEffects": [
+		"./src/utils/resetFontSize.ts",
+]
+```
+
+
+
+## 摇树优化
 
 用于描述副作用项。打包工具在做摇树优化的时候大体遵循如下逻辑：
 
