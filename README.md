@@ -1,4 +1,4 @@
-# [WhiteP1ay的博客](https://whitep1ay.github.io)
+# [WhiteP1ay的博客](https://whitep1ay.github.io/blog/)
 
 这里存放一些个人博客，包含“技术文章”，“读书笔记”，“杂记”三部分。
 

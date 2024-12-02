@@ -2,7 +2,6 @@
 layout: home
 hero:
   name: WhiteP1ay的博客
-  text: 技术博客
   tagline: 记录学习与思考
   actions:
     - theme: brand
