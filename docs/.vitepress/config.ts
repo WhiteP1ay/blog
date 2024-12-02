@@ -7,6 +7,10 @@ export default defineConfig({
   lang: "zh-CN",
   base: "/blog/",
 
+  vite: {
+    assetsInclude: ['**/*.JPG']
+  },
+
   themeConfig: {
     docFooter: {
       prev: false,
