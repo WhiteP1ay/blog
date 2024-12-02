@@ -1,93 +1,112 @@
-# sideEffects与摇树优化丢东西
+# `sideEffects` 与摇树优化丢失问题
 
-起因是 在我们引入了lodash后,分析打包后的资源体积,发现lodash太大了.
+![IMG_2511](./img/IMG_2511.JPG)
 
-然后决定手动配置package.json中的sideEffects字段来做摇树优化,减少lodash体积.
+> 秋天的奥林匹克森林公园
 
-但启动摇树优化后,我们发现css样式丢了,以及部分js模块没执行.
+## 问题背景
+
+在项目中引入 `lodash` 后，通过分析打包资源发现 `lodash` 的体积过大。为了优化包体积，我们决定通过配置 `package.json` 中的 `sideEffects` 字段来启用摇树优化（Tree Shaking）。
+
+然而在启用摇树优化后，出现了两个问题：
+1. CSS 样式丢失
+2. 部分 JS 模块未被执行
 
 ## 解决方法
 
-css的丢失可以这样解决:
+### CSS 样式丢失的解决方案
 
-```js
+在 `package.json` 中将 CSS 文件标记为有副作用：
+
+```json
 "sideEffects": [
-		"**/*.css"
+    "**/*.css"
 ]
 ```
 
-js丢失可能是因为那个模块没有导出任何东西,也需要手动添加进来
+### JS 模块未执行的解决方案
 
-```js
+对于没有导出任何内容（没有 `export`）但需要被执行的模块，需要将其添加到 `sideEffects` 配置中：
+
+```json
 "sideEffects": [
-		"./src/utils/resetFontSize.ts",
+    "./src/utils/resetFontSize.ts"
 ]
 ```
 
+## 摇树优化原理
 
+`sideEffects` 字段用于标记哪些文件具有副作用。打包工具在进行摇树优化时，主要遵循以下步骤：
 
-## 摇树优化
+1. 基于 `ESModule` 进行静态分析，识别未被引用的模块
+2. 判断模块是否有副作用，无副作用则可以安全删除
+3. 怎么知道有没有副作用呢？一方面 `webpack` 依赖的 `terser` 会去检测语句中的副作用（但 JS 作为动态类型语
+言，很多情况下不执行是分析不出结果的，所以语句层面的副作用分析能力有限，可以通过魔法注解 `/*#__PURE__*/` 来
+配合，旨在标明该声明无副作用），另一方面我们可以在 `sideEffects` 配置项中告诉打包工具哪些文件是有副作用的，
+即允许打包工具应该跳过对整个模块及其子树的分析。，很多情况下静态分析无法准确判断副作用。可以使用魔法注释 `/*#__PURE__*/` 来辅助标记无副作用的代码。
 
-`sideEffects`字段用于描述副作用项。打包工具在做摇树优化的时候大体遵循如下逻辑：
+## 实际案例
 
-1. 基于esModule的静态分析，找到没有引用的模块。
-2. 考虑该模块是否有副作用，如果没有副作用则删掉。
-3. 怎么知道有没有副作用呢？一方面webpack依赖的`terser`会去检测语句中的副作用（但 js 作为动态类型语言，很多情况下不执行是分析不出结果的，所以语句层面的副作用分析能力有限，可以通过魔法注解`/*#__PURE__*/` 来配合，旨在标明该声明无副作用），另一方面我们可以在`sideEffects`配置项中告诉打包工具哪些文件是有副作用的，即允许打包工具应该跳过对整个模块及其子树的分析。
+以下是一个典型的问题示例：
 
-实践中遇到的问题：
-
-```tsx
-//setFontSize.ts
+```typescript
+// resetFontSize.ts
 import { detectDeviceType } from './deviceUtils';
-
+  
 (function flexible(window: Window, document: Document) {
-	function resetFontSize() {
-		const clientWidth = parseInt(
-			document.documentElement.clientWidth.toString(),
-			10,
-		);
-		let size = 0;
-		// 使用 detectDeviceType 函数判断设备类型
-		if (detectDeviceType() === 'desktop') {
-			size = (document.documentElement.clientWidth / 1920) * 16;
-			document.documentElement.style.fontSize = (size <= 14 ? 13 : size) + 'px';
-		} else {
-			size = clientWidth;
-			const fontSize = (size / 750) * 16;
-			document.documentElement.style.fontSize = fontSize + 'px';
-		}
-	}
+    function resetFontSize() {
+        const clientWidth = parseInt(
+            document.documentElement.clientWidth.toString(),
+            10
+        );
+        let size = 0;
+        // 使用 detectDeviceType 函数判断设备类型
+        if (detectDeviceType() === 'desktop') {
+            size = (document.documentElement.clientWidth / 1920) * 16;
+            document.documentElement.style.fontSize = (size <= 14 ? 13 : size) + 'px';
+        } else {
+            size = clientWidth;
+            const fontSize = (size / 750) * 16;
+            document.documentElement.style.fontSize = fontSize + 'px';
+        }
+    }
 
-	resetFontSize();
-	window.addEventListener('pageshow', resetFontSize);
-	window.addEventListener('resize', resetFontSize);
+    resetFontSize();
+    window.addEventListener('pageshow', resetFontSize);
+    window.addEventListener('resize', resetFontSize);
 })(window, document);
 
-//index.ts
+// index.ts
 import '@utils/resetFontSize';
-
 ```
 
-看似`index.ts`有对`resetFontSize`的直接引用，但因为`setFontSize`没有`export`导出任何东西，所以该文件会被摇树优化掉。
-
-解决方法：
+虽然 `index.ts` 中引用了 `resetFontSize`，但由于该模块没有任何 `export`，摇树优化会将其删除。解决方案是在 `sideEffects` 中声明：
 
 ```json
-//...package.json
+// package.json
 "sideEffects": [
-		"./src/utils/resetFontSize.ts",
+    "./src/utils/resetFontSize.ts"
 ]
 ```
 
-类似的还有打包后样式文件的丢失，因为css的导入也是副作用。解决方法是：
+### Vue 项目的特殊处理
+
+对于 Vue 项目，如果组件中包含样式，需要特别处理：
 
 ```json
-//...package.json
+// package.json
 "sideEffects": [
-		"###/*.css"
-		//如果是vue项目，组件内样式丢失，你需要指明哪个组件含有副作用
-		"./src/ComponentWithStyle.vue"
+    "**/*.css",
+    // 标记包含样式的 Vue 组件
+    "./src/ComponentWithStyle.vue"
 ]
 ```
 
-或者[干脆把"sideEffects": false从package.json中删掉](https://vue-loader.vuejs.org/guide/#manual-setup)。另外，因为tree-shaking依赖于esModule的静态分析，所以在使用一些库的时候优先考虑es版本：比如使用`lodash-es`而不是`lodash`
+另外，也可以选择完全禁用摇树优化，即[从 `package.json` 中移除 `"sideEffects": false`](https://vue-loader.vuejs.org/guide/#manual-setup)。
+
+## 最佳实践
+
+为了更好地利用摇树优化：
+1. 优先使用支持 ES 模块的包版本，如使用 `lodash-es` 替代 `lodash`
+2. 对于必要的副作用代码，明确在 `sideEffects` 中声明
+3. 合理使用 `/*#__PURE__*/` 注释标记无副作用的代码
