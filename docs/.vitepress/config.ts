@@ -2,10 +2,9 @@ import { defineConfig } from "vitepress";
 import { set_sidebar } from "./sidebar";
 
 export default defineConfig({
-  title: "WhiteP1ay的博客",
-  description: "技术博客",
+  title: "WhiteP1ay",
+  description: "老白的博客",
   lang: "zh-CN",
-  base: "/blog/",
 
   themeConfig: {
     docFooter: {

@@ -1,10 +1,14 @@
-# 浏览器下载 pdf 怎么指定名称
+# 浏览器内置pdf阅读器怎么指定下载文件名
 
-通常在下载附件的时候我们通过 a 标签的 `download` 属性来设置文件名。但如果直接通过`window.open()`打开 pdf 链接，下载的文件名就变得不可控。
+通常在下载附件的时候我们通过 a 标签的 `download` 属性来设置文件名。
+
+但如果直接通过`window.open()`打开 pdf 链接，页面将会被浏览器自带的pdf阅读器接管。
+
+意味着下载功能的文件名变得不可控。
 
 ## 解决方案
 
-其实可以在服务端通过设置响应头来指定文件名  
+其实可以在服务端通过设置响应头来指定文件名。
 关键在
 
 `'Content-Disposition': 'attachment; filename="example.pdf"'`
@@ -38,6 +42,8 @@ Content-Disposition: attachment
 Content-Disposition: attachment; filename="filename.jpg"
 
 ```
+
+> 更多内容参考[mdn](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Disposition)。
 
 2. 关于 `Response` 对象
 
