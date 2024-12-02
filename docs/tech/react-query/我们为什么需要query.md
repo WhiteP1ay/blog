@@ -1,16 +1,18 @@
 # @tanstack/query
 
-## 这是什么？
+## @tanstack/query是什么？
 
-这是一个异步状态管理工具，支持react/vue等主流前端框架。
+@tanstack/query 是一个异步状态管理工具，支持react/vue等主流前端框架。
 
-[github](https://github.com/TanStack/query) 42.7k ⭐️，npm[周下载量](https://www.npmjs.com/package/@tanstack/react-query) 4422006。
+>[github](https://github.com/TanStack/query) 42.7k ⭐️，npm[周下载量](https://www.npmjs.com/package/@tanstack/react-query) 4422006。
 
-可以看出无论是github的star数量还是周下载量都非常夸张。是一个在国外非常主流的技术选择，平均每6个react项目中就有一个使用了react-query。
+可以看出无论是github的star数量还是周下载量都非常夸张，是一个在国外非常主流的技术选择。
 
-
+平均每6个react项目中就有一个使用了react-query。
 
 ## 我们为什么需要它
+
+### 简陋的fetch
 
 如果没有这个库，我们在通过 Fetch 获取数据时，通常是这样的
 
@@ -120,6 +122,8 @@ const StudentList = () => {
 
 为了把缓存的状态分发到各个组件，这又意味着服务端的数据得和状态管理结合起来。问题变得越来越复杂。
 
+### 竞态问题
+
 另一个复杂的场景是：由于 fetch 是异步操作，当多个请求同时发出，由于我们不知道哪一步先完成，所以我们不能保证最终渲染的是否是最后一次请求结果。
 
 想象一下，有一个支持翻页的列表组件，如果用户频繁的翻页，从第一页快速的翻到第十页，因为我们不能保证第十页的请求最后完成，所以第十页的请求结果可能被其他页码的请求结果覆盖。
@@ -150,6 +154,8 @@ useEffect(() => {
   };
 }, [props.id]);
 ```
+
+### 异步状态管理
 
 以上只是明显的缺陷，还有一个隐含的不那么容易暴露出来的缺陷：客户端状态和服务端状态的差异导致的状态维护困难。
 
