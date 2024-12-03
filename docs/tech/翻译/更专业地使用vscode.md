@@ -34,8 +34,7 @@
 
 我推荐使用 [Fira Code](https://github.com/tonsky/FiraCode)!。该字体让抽象的符号堆叠变得更养眼且直观。
 
-![image-20241203153753355](./img/image-20241203153753355.png)
-
+![img](https://raw.githubusercontent.com/tonsky/FiraCode/259ea7299db3f6c404edfa2e3cea7a5598d695a0/extras/logo.svg)
 在项目README里用中文完整地介绍了如何安装。
 
 ## 全新主题

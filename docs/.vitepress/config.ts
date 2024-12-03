@@ -8,7 +8,7 @@ export default defineConfig({
   base: "/blog/",
 
   vite: {
-    assetsInclude: ['**/*.JPG']
+    assetsInclude: ["**/*.JPG", "**/*.png"],
   },
 
   themeConfig: {
