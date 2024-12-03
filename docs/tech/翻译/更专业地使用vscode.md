@@ -32,27 +32,36 @@
 
 ## 升级字体：Fira Code
 
-我推荐使用 [Fira Code](https://github.com/tonsky/FiraCode)!。该字体让抽象的符号堆叠变得更养眼且直观。
+我推荐使用 [Fira Code](https://github.com/tonsky/FiraCode)。
+
+该字体让抽象的符号堆叠变得更养眼且直观。项目README有中文版本。并介绍了各个操作系统的字体安装方法。
 
 ![img](https://raw.githubusercontent.com/tonsky/FiraCode/259ea7299db3f6c404edfa2e3cea7a5598d695a0/extras/logo.svg)
-在项目README里用中文完整地介绍了如何安装。
 
 ## 全新主题
 
 推荐四个主题
 
-- **One Dark Pro**
+**One Dark Pro**
+
+美观的深色主题。
 
   ![img](https://cdn.jsdelivr.net/gh/binaryify/onedark-pro/screenshots/normal.png)
 
-- **Dracula Official**
+**Dracula Official**
+
+深色主题，适合喜欢暗色系的开发者。字体更突出。
 
 ​	![img](https://raw.githubusercontent.com/dracula/visual-studio-code/master/screenshot.png)
 
-- **GitHub Theme**: 
+**GitHub Theme**: 
+
+适合github粉丝的主题。
 
 ![img](https://user-images.githubusercontent.com/378023/132220037-3cd3e777-55a6-445f-9a2e-da6020ebd78d.png)
 
-- **Material Icon Theme **
+**Material Icon Theme**
+
+更清晰美观的图标主题。
 
 ![img](https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/images/fileIcons.png)

@@ -1,6 +1,6 @@
 # 【翻译】在你使用 `memo` 之前
 
-翻译自https://overreacted.io/before-you-memo/
+>翻译自https://overreacted.io/before-you-memo/
 
 市面上有很多文章介绍如何为 `react` 应用做性能优化，通常来说，如果状态更新很慢，你需要：
 
