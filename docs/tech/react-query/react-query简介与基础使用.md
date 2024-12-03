@@ -6,7 +6,7 @@
 
 ## @tanstack/query是什么？
 
-`@tanstack/query` （下文简称query）是一个异步状态管理工具，支持react/vue等主流前端框架。
+`@tanstack/query` （网上通常称为react-query，下文简称query）是一个异步状态管理工具，支持react/vue等主流前端框架。
 
 >[github](https://github.com/TanStack/query) 42.7k ⭐️，npm[周下载量](https://www.npmjs.com/package/@tanstack/react-query) 4422006。
 
