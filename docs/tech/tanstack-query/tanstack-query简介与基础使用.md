@@ -316,3 +316,16 @@ useQuery({ queryKey: ['todos', { status, page }], ... })
 useQuery({ queryKey: ['todos', { page, status }], ...})
 useQuery({ queryKey: ['todos', { page, status, other: undefined }], ... })
 ```
+
+## 示例：自动获取详情
+
+一个例子，一个select组件，当selectValue改变自动改变展示的学生详情。
+
+// todo
+
+两个注意点：
+
+1. hook的参数是id
+2. queryKey里有id
+
+## 
