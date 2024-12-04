@@ -1,6 +1,5 @@
 # 深入了解 useQuery
 
-
 ## 条件性请求
 
 有时候我们希望 query 只在某个场景下或某种条件达成的前提下进行。比如
@@ -36,47 +35,47 @@ useQuery({
 ```tsx
 //!!! 耦合度过高
 useQuery({
-  queryKey: ["book", "author", bookTitle],
+  queryKey: ["book", "comments", bookId],
   queryFn: async () => {
-    const book = await fetchBook(bookTitle);
-    const author = await fetchBookAuthor(book.data.id);
+    const book = await fetchBook(bookId);
+    const comments = await fetchBookComments(book.data.id);
     return {
       book,
-      author,
+      comments,
     };
   },
 });
 ```
 
-通常更正确的做法是拆分开，更灵活，且低耦合。
+通常更正确的做法是拆分开，基于 `enabled` 控制请求触发时机。这样更灵活，且低耦合。
 
 ```tsx
-const useBook = (bookTitle) => {
+const useBookDetail = (bookId) => {
   return useQuery({
-    queryKey: ["book", bookTitle],
-    queryFn: () => fetchBook(bookTitle),
-    enabled: !!bookTitle,
-  });
-};
-```
-
-```tsx
-const useAuthor = (bookId) => {
-  return useQuery({
-    queryKey: ["author", bookId],
-    queryFn: () => fetchBookAuthor(bookId),
+    queryKey: ["book", bookId],
+    queryFn: () => fetchBook(bookId),
     enabled: !!bookId,
   });
 };
 ```
 
 ```tsx
-const useBookAuthor = (bookTitle) => {
-  const book = useBook(bookTitle);
-  const author = useAuthor(book.data.id);
+const useBookComments = (bookId) => {
+  return useQuery({
+    queryKey: ["comments", bookId],
+    queryFn: () => fetchBookComments(bookId),
+    enabled: !!bookId,
+  });
+};
+```
+
+```tsx
+const useBookDetailAndComments = (bookId) => {
+  const book = useBookDetail(bookId);
+  const comments = useBookComments(bookId);
   return {
     book,
-    author,
+    comments,
   };
 };
 ```
@@ -125,17 +124,17 @@ useQuery({
 
 ```ts
 const queryFn = async (bookId) => {
-  const [book, author] = await Promise.all([
+  const [book, comments] = await Promise.all([
     fetchBook(bookId),
-    fetchBookAuthor(bookId),
+    fetchBookComments(bookId),
   ]);
   return {
     book,
-    author,
+    comments,
   };
 };
 useQuery({
-  queryKey: ["book", "author", bookTitle],
+  queryKey: ["book", "comments", bookTitle],
   queryFn,
 });
 ```
@@ -147,18 +146,25 @@ useQuery({
 基于 combine 可以实现更复杂的聚合逻辑。
 
 ```ts
-const queries = useQueries({
+const { bookComments, bookDetail, isDetailAndCommentPending } = useQueries({
   queries: [
-    { queryKey: ["book", bookId], queryFn: () => fetchBook(bookId) },
-    { queryKey: ["author", bookId], queryFn: () => fetchBookAuthor(bookId) },
+    {
+      queryKey: ["book", selectedBookId],
+      queryFn: () => fetchBookDetail(selectedBookId!),
+      enabled: !!selectedBookId,
+    },
+    {
+      queryKey: ["bookComments", selectedBookId],
+      queryFn: () => fetchBookComments(selectedBookId!),
+      enabled: !!selectedBookId,
+    },
   ],
-  combine: (results) => {
-    const [book, author] = results.map((item) => item.data);
+  combine: (data) => {
+    const [bookDetail, bookComments] = data;
     return {
-      book,
-      author,
-      isPending: results.some((result) => result.isPending),
-      isError: results.some((result) => result.isError),
+      bookDetail,
+      bookComments,
+      isDetailAndCommentPending: data.some((query) => query.isPending),
     };
   },
 });
