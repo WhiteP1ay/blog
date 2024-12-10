@@ -2,7 +2,9 @@
 
 ## 条件性请求
 
-有时候我们希望 query 只在某个场景下或某种条件达成的前提下进行。比如
+所谓条件性请求，就是指 query 只在某个场景下或某种条件达成的前提下进行。
+
+比如：
 
 ```tsx
 //!!! 错误示范
@@ -14,30 +16,34 @@ if (keyword) {
 }
 ```
 
-但很明显，这违反了 `hook` 的设计规范，所以可以通过传入 `enable` 来解决。
+但很明显，这违反了 `hook` 的设计规范。
+
+可以通过传入 `enabled` 来解决条件性请求。即：仅当 `enabled` 为 `true` 时，query 才会被触发。
 
 ```tsx
 useQuery({
   queryKey: ["search", keyword],
   queryFn,
-  enable: !!keyword,
+  enabled: !!keyword,
 });
 ```
 
 ## 依赖性请求
 
-假设请求 a 依赖于请求 b 的结果，我们将请求 a 称为依赖性请求。
+依赖性请求是指当前请求依赖于其他请求的结果。
 
-依赖性请求可以在 `queryFn` 里统一处理，但这并不利于逻辑的抽象，或者说耦合性过高了。不利于维护。
+比如：基于书名请求一本书的详情和评论。获取评论需要书的 id，而书的 id 需要基于书名获取。
 
-但也不是一无是处，`queryFn` 里统一处理依赖性请求，可以使得两个请求共享错误处理、loading 状态等等。如果你明确没有拆分场景，那这样确实更加方便。
+依赖性请求可以在 `queryFn` 里通过多个 `await` 处理，但这并不利于逻辑的抽象，或者说耦合性过高。不利于维护。
+
+但也不是一无是处，这种处理方式可以让两个请求共享错误处理、loading 状态等等。如果你明确不需要拆分，那这样确实会更加方便。
 
 ```tsx
 //!!! 耦合度过高
 useQuery({
-  queryKey: ["book", "comments", bookId],
+  queryKey: ["book", "comments", bookTitle],
   queryFn: async () => {
-    const book = await fetchBook(bookId);
+    const book = await fetchBook(bookTitle);
     const comments = await fetchBookComments(book.data.id);
     return {
       book,
@@ -47,20 +53,20 @@ useQuery({
 });
 ```
 
-通常更正确的做法是拆分开，基于 `enabled` 控制请求触发时机。这样更灵活，且低耦合。
+但我更推荐拆分开，基于 `enabled` 控制请求触发时机。这样更灵活，且低耦合。
 
 ```tsx
-const useBookDetail = (bookId) => {
+const useBookDetail = (bookTitle: string) => {
   return useQuery({
-    queryKey: ["book", bookId],
-    queryFn: () => fetchBook(bookId),
-    enabled: !!bookId,
+    queryKey: ["book", bookTitle],
+    queryFn: () => fetchBook(bookTitle),
+    enabled: !!bookTitle,
   });
 };
 ```
 
 ```tsx
-const useBookComments = (bookId) => {
+const useBookComments = (bookId: string) => {
   return useQuery({
     queryKey: ["comments", bookId],
     queryFn: () => fetchBookComments(bookId),
@@ -70,9 +76,9 @@ const useBookComments = (bookId) => {
 ```
 
 ```tsx
-const useBookDetailAndComments = (bookId) => {
-  const book = useBookDetail(bookId);
-  const comments = useBookComments(bookId);
+const useBookDetailAndComments = (bookTitle: string) => {
+  const book = useBookDetail(bookTitle);
+  const comments = useBookComments(book.data?.id);
   return {
     book,
     comments,
@@ -80,19 +86,9 @@ const useBookDetailAndComments = (bookId) => {
 };
 ```
 
-## 垃圾回收
-
-如果一致缓存数据不释放会导致内存泄漏。所以垃圾回收机制很重要，尤其是低端设备上。
-
-query 默认垃圾回收时间 `gcTime` 是 5 分钟。但这不意味着缓存时间超过五分钟都会被清空。
-
-**被回收的前提是数据过期且不再被引用。**
-
-组件每次引用异步状态都会创建一个观察者，所以 query 也可以通过判断观察者数量是否为 0 来判断数据是否不再被引用。
-
 ## 轮询
 
-轮询通常用在需要实时性反馈的场景，比如用户是否完成支付。
+轮询通常用于那些需要实时性反馈的场景，比如查询用户是否完成支付。
 
 `useQuery` 的 `refetchInterval` 参数可以定义轮询时间，单位毫秒。
 
@@ -104,7 +100,9 @@ useQuery({
 });
 ```
 
-`refetchInterval` 也可以是一个函数，想象这样一个场景：前端通过轮询来得知用户是否完成支付，用户一旦完成支付轮询就该停止。
+`refetchInterval` 也可以是一个函数。
+
+想象这样一个场景：前端通过轮询来得知用户是否完成支付，用户一旦完成支付轮询就该停止。
 
 ```ts
 {
@@ -120,10 +118,12 @@ useQuery({
 
 ## 并发请求
 
-我们可以在 queryFn 里基于 `Promise.all` 来并发请求。但这又犯了上文说的错误，让两个请求耦合在一起。
+当一些业务场景需要前端并发若干请求时，我们可以在 `queryFn` 里基于 `Promise.all` 来并发请求。
+
+但这又犯了上文说的错误，让两个请求耦合在一起。
 
 ```ts
-const queryFn = async (bookId) => {
+const queryFn = async (bookId: string) => {
   const [book, comments] = await Promise.all([
     fetchBook(bookId),
     fetchBookComments(bookId),
@@ -134,16 +134,18 @@ const queryFn = async (bookId) => {
   };
 };
 useQuery({
-  queryKey: ["book", "comments", bookTitle],
+  queryKey: ["book", "comments", bookId],
   queryFn,
 });
 ```
 
-也可以同时调用 useQuery 多次，但又要额外处理 isFetching/isLoading 等逻辑。
+也可以同时调用 `useQuery` 多次，但这样需要额外处理 `isFetching/isLoading` 等逻辑。
 
 所以更推荐使用 `useQueries` 来并发请求。
 
-基于 combine 可以实现更复杂的聚合逻辑。
+`useQueries` 的 `queries` 参数是一个数组，数组里的每一项都是一个 `useQuery` 的配置对象。
+
+基于 `combine` 可以实现更复杂的聚合逻辑。
 
 ```ts
 const { bookComments, bookDetail, isDetailAndCommentPending } = useQueries({
