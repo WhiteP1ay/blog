@@ -2,13 +2,17 @@
 
 所有状态管理工具本质上都是在做两件事,一个是`获取数据`，一个是`修改数据`。
 
-比如 `vuex` 中 `actions` 是用于修改数据的，`state` 是用于获取数据的。
+用`vuex`举例， `actions` 是用于修改数据的，`state` 是用于获取数据的。
 
-或者 react 自己的 hooks，`useState` ,它返回的`state` 是用于获取数据的，`setState` 是用于修改数据的。
+或者 react 自己的`useState` hooks，顾名思义，它本质也是一种状态管理。
 
-`获取数据`对应的是`Query`，`修改数据`对应的是`Mutation`。
+```ts
+const [state, setState] = useState(initialState);
+```
 
-`Mutation` 是 React Query 中用于修改数据的核心功能。它允许你执行诸如创建、更新和删除数据的操作，并处理这些操作的结果。
+它返回的`state` 是用于获取数据的，`setState` 是用于修改数据的。
+
+在`query` 中，`获取数据`对应的是`useQuery`，`修改数据`对应的是`useMutation`。
 
 ```tsx
 const { mutate } = useMutation({
@@ -22,7 +26,7 @@ const { mutate } = useMutation({
 
 因为`useMutation`可以让我们很方便的获取到`mutation`的衍生状态，比如`isPending`，`isSuccess`，`isError`等。
 
-如果我们想在`mutation`成功后，做一些额外的操作，比如`refetch`，`invalidateQueries`，`toast`等，那么`useMutation`就非常有用了。
+并且我们可以通过`onSuccess`，`onError`等回调函数，在`mutation`成功或失败后，更方便的做一些额外的操作。
 
 ```tsx
 const { mutate } = useMutation({
@@ -39,6 +43,6 @@ const { mutate } = useMutation({
 });
 ```
 
-我们基于`queryKey`来缓存数据，所以`invalidateQueries`就是让之前基于`queryKey`缓存的数据失效。
+setQueryData 是用于设置缓存数据，invalidateQueries 是用于让之前基于 queryKey 缓存的数据失效。
 
-queryKey 支持模糊匹配，所以`invalidateQueries({ queryKey: ["users"] })`会让所有包含`users`的`queryKey`的缓存数据都失效。
+这些`api`对于前端管理缓存状态非常有用，可以有效提升用户体验。
