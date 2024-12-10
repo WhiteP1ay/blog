@@ -1,12 +1,14 @@
 # Mutation
 
+> Unlike queries, mutations are typically used to create/update/delete data or perform server side-effects. For this purpose, TanStack Query exports a useMutation hook.
+
+> 与查询不同，mutation（变更）通常用于创建/更新/删除数据或执行服务器端副作用。为此，TanStack Query 导出了一个 useMutation 钩子。
+
 ## 什么是 Mutation
 
 所有状态管理工具本质上都是在做两件事,一个是`获取数据`，一个是`修改数据`。
 
-用`vuex`举例， `actions` 是用于修改数据的，`state` 是用于获取数据的。
-
-或者 react 自己的`useState` hooks，顾名思义，它本质也是一种状态管理。
+比如 react 自己的`useState` hook，顾名思义，它本质也是一种状态管理。
 
 ```ts
 const [state, setState] = useState(initialState);
@@ -15,6 +17,8 @@ const [state, setState] = useState(initialState);
 它返回的`state` 是用于获取数据的，`setState` 是用于修改数据的。
 
 在`query` 中，`获取数据`对应的是`useQuery`，`修改数据`对应的是`useMutation`。
+
+> 我个人理解，就是为`POST`/`PUT`/`DELETE`等请求提供了一个更方便的钩子。
 
 ## useMutation
 
