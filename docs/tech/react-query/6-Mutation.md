@@ -38,6 +38,8 @@ const { mutate } = useMutation({
 
 我们可以通过`onSuccess`，`onError`等回调函数，在`mutation`成功或失败后，更方便的做一些额外的操作。
 
+> 值得注意的是，如果 mutationFn 中返回的 Promise 是`reject`的，那么就算接口请求成功了，onSuccess 也不会触发。useMutation 的 throwOnError 参数可以控制是否抛出错误，但默认是`false`换句话说，如果 onSuccess 一直不触发，请将 throwOnError 设为 true，查看是否报错。
+
 ```tsx
 const { mutate } = useMutation({
   mutationFn: () => {
@@ -47,12 +49,77 @@ const { mutate } = useMutation({
     toast.success("User created successfully");
     // 创建用户成功后，更新缓存中的用户列表
     queryClient.setQueryData(["users", newUser.id], newUser);
-    // 或者创建用户成功后，让之前的缓存数据失效
+    // 或者创建用户成功后，让之前的缓存数据失效，并重新获取数据（即刷新缓存）
     queryClient.invalidateQueries({ queryKey: ["users"] });
   },
 });
 ```
 
-`setQueryData` 是用于设置缓存数据，`invalidateQueries` 是用于让之前基于`queryKey`缓存的数据失效。
+`setQueryData` 是用于设置缓存数据
+
+`invalidateQueries` 是用于让之前基于`queryKey`缓存的数据失效并重新获取数据（即刷新缓存）。
 
 这些`api`对于前端管理缓存状态非常有用，可以有效提升用户体验。
+
+## 乐观更新 Optimistic Updates
+
+通常我们提交一个`mutation`后，需要给用户一个 loading，并等待后端返回结果，确保请求成功后才能更新 UI。
+
+但这样用户体验很不流畅。
+
+我们该如何优化呢？其实，在很多情况下，我们不需要等待后端返回结果就已经可以预知请求成功后的 ui 变化。如果服务器告诉我们请求失败了，大不了提示用户“请求失败稍后重试”，然后回滚 ui。
+
+这就是`optimistic updates`，也就是`乐观更新`。
+
+以下这些场景非常适合：
+
+- 点赞
+- 收藏
+- 关注
+- 评论
+- 删除
+
+## hook 封装
+
+核心在于
+
+1. onMutate 的时候通过修改状态实现乐观更新，乐观更新前保存一份快照，并返回回滚方法
+2. onError 的时候调用回滚方法
+3. onSettled 的时候调用 invalidateQueries 可以刷新缓存
+
+```tsx
+export const useOptimisticMutation = ({
+  mutationFn,
+  queryKey,
+  updater,
+  invalidates,
+}) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn,
+    onMutate: async () => {
+      // 取消任何相关请求，避免覆盖结果
+      await queryClient.cancelQueries({
+        queryKey,
+      });
+
+      const snapshot = queryClient.getQueryData(queryKey);
+
+      queryClient.setQueryData(queryKey, updater);
+
+      return () => {
+        queryClient.setQueryData(queryKey, snapshot);
+      };
+    },
+    onError: (err, variables, rollback) => {
+      rollback?.();
+    },
+    onSettled: () => {
+      return queryClient.invalidateQueries({
+        queryKey: invalidates,
+      });
+    },
+  });
+};
+```
