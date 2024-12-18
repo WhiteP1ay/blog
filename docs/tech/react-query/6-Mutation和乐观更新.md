@@ -1,4 +1,4 @@
-# Mutation
+# Mutation & 乐观更新
 
 > Unlike queries, mutations are typically used to create/update/delete data or perform server side-effects. For this purpose, TanStack Query exports a useMutation hook.
 
@@ -79,13 +79,87 @@ const { mutate } = useMutation({
 - 评论
 - 删除
 
+## 基础实现
+
+既然是乐观更新，那就不能等后端返回结果再修改状态了。换句话说，我们不应该在`onSuccess`中修改状态，而是应该在`onMutate`中修改状态。
+
+怎么修改状态呢？
+
+`queryClient`提供了`setQueryData`方法，可以让我们修改缓存的数据。
+
+接下来要思考的问题是，如果网络请求失败了，我们该如何回滚状态？
+
+`queryClient`提供了`getQueryData`方法，可以让我们获取缓存的数据。
+
+基于`queryKey`，我们可以在乐观的修改状态前先保存目前缓存的状态作为快照，再在`onMutate`方法中返回一个回滚方法。
+
+onError 函数的第三个参数是 context，它是`onMutate`的返回值，在本例中就是回滚方法。
+
+类似`Promise`，该 api 还提供了`onSettled`，它无论接口成功与否，都会执行。我们可以在里面调用`invalidateQueries`，刷新缓存。
+
+```ts
+onMutate: async ({ targetData }) => {
+  const snapshot = queryClient.getQueryData(queryKey);
+  // 乐观更新
+  queryClient.setQueryData(queryKey, (oldData) => {
+    //handle old data and then
+    return newData;
+  });
+  // 回滚
+  return () => queryClient.setQueryData(queryKey, snapshot);
+};
+onError: (err, variables, rollback) => {
+  rollback?.();
+};
+
+onSettled: () => {
+  return queryClient.invalidateQueries({
+    queryKey,
+  });
+};
+```
+
+## 真实代码
+
+```tsx
+export type Todo = {
+  id: number;
+  title: string;
+  description: string;
+  completed: boolean;
+};
+
+const useCheckTodo = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ todo }: { todo: Todo }) => checkTodo(todo),
+    onMutate: ({ todo }) => {
+      const snapshot = queryClient.getQueryData(["todoList"]);
+      queryClient.setQueryData(["todoList"], (oldData: Todo[]) => {
+        return oldData.map((t) =>
+          t.id === todo.id ? { ...t, completed: !t.completed } : t
+        );
+      });
+      /**
+       * The value returned from this function will be passed to both the onError and onSettled functions in the event of a mutation failure and can be useful for rolling back optimistic updates.
+       */
+      return () => {
+        queryClient.setQueryData(["todoList"], snapshot);
+      };
+    },
+    onError: (error, todo, rollback) => {
+      rollback?.();
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["todoList"] });
+    },
+  });
+};
+```
+
 ## hook 封装
 
-核心在于
-
-1. onMutate 的时候通过修改状态实现乐观更新，乐观更新前保存一份快照，并返回回滚方法
-2. onError 的时候调用回滚方法
-3. onSettled 的时候调用 invalidateQueries 可以刷新缓存
+如果常用乐观更新这种操作，我们可以将它封装成一个 hook，方便复用。
 
 ```tsx
 export const useOptimisticMutation = ({
