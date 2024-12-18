@@ -23,9 +23,22 @@ const [state, setState] = useState(initialState);
 ## useMutation
 
 ```tsx
-const { mutate } = useMutation({
+const { mutate, isPending, isSuccess, isError } = useMutation({
   mutationFn: () => {
     return axios.post("/api/user", { name: "jack" });
+  },
+  // 以下方法在 mutate 各个阶段触发
+  onMutate: () => {
+    console.log("onMutate");
+  },
+  onSuccess: () => {
+    console.log("onSuccess");
+  },
+  onError: () => {
+    console.log("onError");
+  },
+  onSettled: () => {
+    console.log("onSettled");
   },
 });
 ```
@@ -160,6 +173,8 @@ const useCheckTodo = () => {
 ## hook 封装
 
 如果常用乐观更新这种操作，我们可以将它封装成一个 hook，方便复用。
+
+> 但我觉得一个项目中涉及到乐观更新的地方其实并不多，基于`useMutate`调用`onMutate`，`onError`，`onSettled`等方法，可以很方便的实现乐观更新。封装了 Hook 后，反而增加了代码的复杂度。
 
 ```tsx
 export const useOptimisticMutation = ({
