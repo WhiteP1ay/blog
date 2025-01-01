@@ -120,12 +120,12 @@ useQuery({
 
 当一些业务场景需要前端并发若干请求时，我们可以在 `queryFn` 里基于 `Promise.all` 来并发请求。
 
-但这又犯了上文说的错误，让两个请求耦合在一起。
+这很好，但会让两个请求耦合在一起。任意请求的失败都会导致整个请求失败，且只有一个缓存 key，不利于细粒度的控制缓存。
 
 ```ts
 const queryFn = async (bookId: string) => {
   const [book, comments] = await Promise.all([
-    fetchBook(bookId),
+    fetchBookDetail(bookId),
     fetchBookComments(bookId),
   ]);
   return {
@@ -139,9 +139,26 @@ useQuery({
 });
 ```
 
-也可以同时调用 `useQuery` 多次，但这样需要额外处理 `isFetching/isLoading` 等逻辑。
+也可以调用 `useQuery` 多次，这也很好，但缺点是不能动态控制请求并发的数量。
 
-所以更推荐使用 `useQueries` 来并发请求。
+```ts
+// 基于ids并发请求，可以动态控制请求数量
+const ids = [1, 2, 3];
+const combinedQueries = useQueries({
+  queries: ids.map((id) => ({
+    queryKey: ["post", id],
+    queryFn: () => fetchPost(id),
+  })),
+  combine: (results) => {
+    return {
+      data: results.map((result) => result.data),
+      pending: results.some((result) => result.isPending),
+    };
+  },
+});
+```
+
+如果你明确并发的请求之间存在逻辑关联，或者需要动态控制并发数量，更推荐使用 `useQueries`。
 
 `useQueries` 的 `queries` 参数是一个数组，数组里的每一项都是一个 `useQuery` 的配置对象。
 
